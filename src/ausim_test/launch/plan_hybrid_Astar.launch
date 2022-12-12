@@ -1,0 +1,78 @@
+<launch>
+
+  <arg name="map_size_x_" default="42.0"/>
+  <arg name="map_size_y_" default="40.0"/>
+  <arg name="map_size_z_" default="5.0"/>
+
+  <arg name="odometry_topic" default="/state_ukf/odom"/>
+  <arg name="cloud_topic" default="/global_map"/>
+
+  <node pkg="car_planner" type="local_planner_node" name="local_planner_node" output="screen">
+
+    <remap from="/odom_world"    to="$(arg odometry_topic)"/>
+    <remap from="/sdf_map/odom"  to="$(arg odometry_topic)"/>
+    <remap from="/sdf_map/cloud" to="$(arg cloud_topic)"/>
+
+    <remap from="~waypoints"     to = "/move_base_simple/goal"/>
+
+    <param name="car_search/tau" value="0.1" type="double"/>
+    <param name="car_seach/velocity" value="1.0" type="double"/>
+    <param name="car_search/lambda_heu" value="1.0" type="double"/>
+    <param name="car_search/allocate_num" value="100000" type="int"/>
+    <param name="car_search/check_num" value="10" type="int"/>
+    <param name="car_search/car_l" value="1.35" type="double"/>
+    <param name="car_search/car_w" value="0.57" type="double"/>
+    <param name="car_search/car_h" value="0.39" type="double"/>
+    <param name="car_search/max_steer" value="0.26" type="double"/>
+    <param name="car_search/wheelbase" value="0.6" type="double"/>
+    <param name="car_search/yaw_resolution" value="0.17453" type="double"/>
+    <param name="car_search/check_dt" value="0.05" type="double"/>
+    <param name="car_search/frame" value="world" type="string"/>
+    <param name="car_search/resolution"      value="0.1" /> 
+
+    <param name="sdf_map/resolution"      value="0.1" /> 
+    <param name="sdf_map/map_size_x"   value="$(arg map_size_x_)" /> 
+    <param name="sdf_map/map_size_y"   value="$(arg map_size_y_)" /> 
+    <param name="sdf_map/map_size_z"   value="$(arg map_size_z_)" /> 
+    <param name="sdf_map/local_update_range_x"  value="10" /> 
+    <param name="sdf_map/local_update_range_y"  value="10" /> 
+    <param name="sdf_map/local_update_range_z"  value="4.5" /> 
+    <param name="sdf_map/obstacles_inflation"     value="0.0" /> 
+    <param name="sdf_map/local_bound_inflate"    value="0.0"/>
+    <param name="sdf_map/local_map_margin" value="50"/>
+    <param name="sdf_map/ground_height"        value="-0.50"/>
+
+    <!-- camera parameter -->
+    <param name="sdf_map/cx" value="321.04638671875"/>
+    <param name="sdf_map/cy" value="243.44969177246094"/>
+    <param name="sdf_map/fx" value="387.229248046875"/>
+    <param name="sdf_map/fy" value="387.229248046875"/>
+    <!-- depth filter -->
+    <param name="sdf_map/use_depth_filter" value="false"/>
+    <param name="sdf_map/depth_filter_tolerance" value="0.15"/>
+    <param name="sdf_map/depth_filter_maxdist"   value="5.0"/>
+    <param name="sdf_map/depth_filter_mindist"   value="0.2"/>
+    <param name="sdf_map/depth_filter_margin"    value="2"/>
+    <param name="sdf_map/k_depth_scaling_factor" value="1000.0"/>
+    <param name="sdf_map/skip_pixel" value="2"/>
+
+    <!-- local fusion -->
+    <param name="sdf_map/p_hit"  value="0.65"/>
+    <param name="sdf_map/p_miss" value="0.35"/>
+    <param name="sdf_map/p_min"  value="0.12"/>
+    <param name="sdf_map/p_max"  value="0.90"/>
+    <param name="sdf_map/p_occ"  value="0.80"/>
+    <param name="sdf_map/min_ray_length" value="0.5"/>
+    <param name="sdf_map/max_ray_length" value="4.5"/>
+
+    <param name="sdf_map/esdf_slice_height" value="0.3"/>
+    <param name="sdf_map/visualization_truncate_height"   value="2.49"/>
+    <param name="sdf_map/virtual_ceil_height"   value="2.5"/>
+    <param name="sdf_map/show_occ_time"  value="false"/>
+    <param name="sdf_map/show_esdf_time" value="false"/>
+    <param name="sdf_map/pose_type"     value="1"/>  
+    <param name="sdf_map/frame_id"      value="world"/>
+
+  </node>
+
+</launch>

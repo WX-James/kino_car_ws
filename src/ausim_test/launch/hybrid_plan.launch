@@ -1,0 +1,18 @@
+<launch>
+
+    <!-- Hunter仿真环境 -->
+    <include file="$(find ausim_test)/launch/hunter_bringup.launch">
+    </include>
+
+    <!-- 随机地图 -->
+    <include file="$(find ausim_test)/launch/generate_random_map.launch">
+    </include>
+
+    <!-- Hybrid_Astar局部规划 -->
+    <include file="$(find ausim_test)/launch/plan_hybrid_Astar.launch">
+    </include>
+
+    <!-- 阿克曼NMPC -->
+    <node name="nmpc" pkg="ausim_test" type="local_planner.py" launch-prefix="gnome-terminal --title=nmpc_python -x" />
+
+</launch>

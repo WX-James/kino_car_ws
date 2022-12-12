@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<launch>
+
+  <include file="$(find hunter2_gazebo)/launch/hunter2_empty_world.launch">
+        <arg name="gazebo_gui" default="false"/>
+        <arg name="cmd_rqt_vis_" default="true"/>
+  </include>
+
+  <node name="pub_odom" pkg="hunter2_gazebo" type="hunter_odom_tf.py" output="screen"></node>
+
+  <!-- <include file="$(find ausim_test)/launch/plan_hybrid_Astar.launch">
+  </include> -->
+
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find ausim_test)/config/rviz.rviz" />
+
+</launch> 

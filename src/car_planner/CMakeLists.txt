@@ -20,11 +20,14 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   visualization_msgs
   cv_bridge
+  plan_env
 )
 
 catkin_package(
  INCLUDE_DIRS include
  DEPENDS OpenCV Eigen Boost
+ LIBRARIES car_planner
+ CATKIN_DEPENDS plan_env
 )
 include_directories( 
     SYSTEM 
@@ -39,6 +42,9 @@ include_directories(
 
 add_library( car_search 
     src/car_search.cpp
+    src/hybrid_search.cpp
+    src/hybrid_planner_fsm.cpp
+    src/plan_manager.cpp
     )
 target_link_libraries( car_search
     ${catkin_LIBRARIES}
@@ -53,5 +59,18 @@ target_link_libraries(car_node
   car_search
 )
 
+
+
+
+
+
+add_executable(local_planner_node
+    src/local_planner_node.cpp
+)
+target_link_libraries(local_planner_node
+  ${catkin_LIBRARIES}
+  ${PCL_LIBRARIES}
+  car_search
+)
 
 # add_library()

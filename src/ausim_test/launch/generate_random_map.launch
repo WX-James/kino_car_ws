@@ -1,0 +1,38 @@
+  <launch>
+  <arg name="map_size_x_" default="42.0"/>
+  <arg name="map_size_y_" default="40.0"/>
+  <arg name="map_size_z_" default="5.0"/>
+
+    <arg name="cloud_topic" default="/global_map"/>
+
+    <!-- random map -->
+    <node pkg ="map_generator" name ="random_forest" type ="random_forest" output = "screen">    
+        <param name="map/x_size"     value="$(arg map_size_x_)" />
+        <param name="map/y_size"     value="$(arg map_size_y_)" />
+        <param name="map/z_size"     value="$(arg map_size_z_)" />
+        <param name="map/resolution" value="0.1"/>        
+
+        <param name="ObstacleShape/seed" value="1"/>
+        
+        <param name="map/obs_num"    value="80"/>
+        <param name="ObstacleShape/lower_rad" value="0.5"/>
+        <param name="ObstacleShape/upper_rad" value="0.7"/>
+        <param name="ObstacleShape/lower_hei" value="0.0"/>
+        <param name="ObstacleShape/upper_hei" value="3.0"/>        
+
+        <param name="map/circle_num" value="10"/>
+        <param name="ObstacleShape/radius_l" value="0.7"/>
+        <param name="ObstacleShape/radius_h" value="0.5"/>        
+        <param name="ObstacleShape/z_l" value="0.7"/>        
+        <param name="ObstacleShape/z_h" value="0.8"/>        
+        <param name="ObstacleShape/theta" value="0.5"/>        
+
+        <param name="sensing/radius" value="10.0"/>        
+        <param name="sensing/rate"   value="10.0"/>  
+        
+        <param name="min_distance" value="1.2"/>         
+        <remap from="/map_generator/global_cloud" to="$(arg cloud_topic)"/>
+
+    </node>
+
+</launch>

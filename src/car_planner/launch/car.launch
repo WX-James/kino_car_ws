@@ -34,11 +34,11 @@
     </node>
 
 
-    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find car_planner)/param/default.rviz" required="true" />
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find car_planner)/param/default.rviz" required="true" />
 
 
 
- <node pkg="car_planner" type="car_node" name="car_node" output="screen">
+  <node pkg="car_planner" type="car_node" name="car_node" output="screen">
     <remap from="~global_map"       to = "/global_map"/>
     <remap from="~waypoints"       to = "/move_base_simple/goal"/>
     <param name="car/init_x"   value="0.0" />
@@ -50,9 +50,9 @@
     <param name="car_search/lambda_heu" value="1.0" type="double"/>
     <param name="car_search/allocate_num" value="100000" type="int"/>
     <param name="car_search/check_num" value="10" type="int"/>
-    <param name="car_search/car_l" value="1.35" type="double"/>
-    <param name="car_search/car_w" value="0.57" type="double"/>
-    <param name="car_search/car_h" value="0.39" type="double"/>
+    <param name="car_search/car_l" value="0.82" type="double"/>
+    <param name="car_search/car_w" value="0.64" type="double"/>
+    <param name="car_search/car_h" value="0.31" type="double"/>
     <!-- <param name="car_search/max_steer" value="0.7" type="double"/> -->
     <param name="car_search/max_steer" value="0.26" type="double"/>
     <param name="car_search/wheelbase" value="0.6" type="double"/>
