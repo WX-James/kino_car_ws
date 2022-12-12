@@ -96,6 +96,14 @@ Visualization Manager:
       Use Fixed Frame: true
       Use rainbow: true
       Value: true
+    - Class: rviz/MarkerArray
+      Enabled: true
+      Marker Topic: /visualization/car_path
+      Name: MarkerArray
+      Namespaces:
+        {}
+      Queue Size: 100
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 255; 253; 224
@@ -123,7 +131,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/ThirdPersonFollower
-      Distance: 50.1124267578125
+      Distance: 21.923093795776367
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -131,17 +139,17 @@ Visualization Manager:
         Value: false
       Field of View: 0.7853981852531433
       Focal Point:
-        X: -7.0811004638671875
-        Y: -1.8117144107818604
-        Z: -2.1338477381505072e-05
+        X: 0.6696124076843262
+        Y: -1.3646318912506104
+        Z: -2.2292151697911322e-05
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 1.11479651927948
+      Pitch: 1.5697962045669556
       Target Frame: <Fixed Frame>
-      Yaw: 3.049499988555908
+      Yaw: 3.1444945335388184
     Saved:
       - Class: rviz/ThirdPersonFollower
         Distance: 17.48538589477539

@@ -1,6 +1,8 @@
 #include <nav_msgs/Path.h>
 #include <nav_msgs/Odometry.h>
 #include <car_planner/car_search.h>
+
+
 using namespace car_planner;
 std::string mesh_resource;
 ros::Subscriber waypoints_sub;
@@ -38,6 +40,7 @@ int main(int argc, char **argv)
 }
 void rcvWaypointsCallback(const geometry_msgs::PoseStamped& msg)                                                                                      
 {  
+    update_flag = false;
     Eigen::Quaterniond tq; 
     tq.x() = msg.pose.orientation.x;
     tq.y() = msg.pose.orientation.y;
@@ -49,21 +52,29 @@ void rcvWaypointsCallback(const geometry_msgs::PoseStamped& msg)
     ROS_INFO_STREAM("TARGET="<<target_pt);
     ROS_INFO("[node] receive the planning target");
     kinosearch->reset();
-    kinosearch->car_search(current_state,target_pt);
-    kinosearch->visualize(0.1);
-    update_flag = true;
-    update_time = ros::Time::now().toSec();
+    int status = kinosearch->car_search(current_state,target_pt);
+
+    if (status == Car_KinoSearch::NO_PATH) {
+        std::cout << "[kino replan]: Can't find path." << std::endl;
+        return;
+    } else {
+        std::cout << "[kino replan]: Search success." << std::endl;
+        kinosearch->visualize(0.1);
+        kinosearch->draw_path(0.1);
+        update_flag = true;
+        update_time = ros::Time::now().toSec();
+    }
 }
 void state_update(const ros::TimerEvent& event){
     if(update_flag){
-            double now_time = ros::Time::now().toSec();
-            double delta_time = now_time - update_time;
-            if(delta_time<=kinosearch->get_totalT()){
-                current_state = kinosearch->evaluate_state(delta_time);
-            }
-            else{
-                update_flag = false;
-            }
+        double now_time = ros::Time::now().toSec();
+        double delta_time = now_time - update_time;
+        if(delta_time<=kinosearch->get_totalT()){
+            current_state = kinosearch->evaluate_state(delta_time);
+        }
+        else{
+            update_flag = false;
+        }
     }
     vis_carmodel(current_state);
 }

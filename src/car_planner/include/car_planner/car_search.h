@@ -27,7 +27,7 @@
 #include <memory>
 
 namespace car_planner {
-enum { REACH_HORIZON = 1, NO_PATH = 2,REACH_END = 3};
+// enum { REACH_HORIZON = 1, NO_PATH = 2,REACH_END = 3};
 enum SUBPATH_TYPE{
         LEFT_FORWORD,
         STRAIGHT_FORWORD,
@@ -158,6 +158,7 @@ class Car_KinoSearch {
   double backward_penalty_factor = 4.5;
   /* ros relate*/
   ros::Publisher kinosearchPub;
+  ros::Publisher kinopathPub;
   std::string frame;
   ros::Subscriber point_cloud_sub_;
   /* map */
@@ -207,10 +208,14 @@ class Car_KinoSearch {
   bool is_shot_sucess(Eigen::Vector3d state1,Eigen::Vector3d state2);
   int car_search(Eigen::Vector3d start_state,Eigen::Vector3d end_state);
   void visualize(double dt);
+  void draw_path(double dt);
   Eigen::Vector3d evaluate_state(double time);
   inline bool is_collision(Eigen::Vector3d state);
   typedef std::shared_ptr<Car_KinoSearch> Ptr;
   double get_totalT();
+
+  enum { REACH_HORIZON = 1, NO_PATH = 2,REACH_END = 3};
+
 };
 };
 #endif

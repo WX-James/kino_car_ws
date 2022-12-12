@@ -35,6 +35,7 @@ Car_KinoSearch::Car_KinoSearch(ros::NodeHandle& nh){
     O----O
     */
     kinosearchPub = nh.advertise<visualization_msgs::MarkerArray>("/visualization/car_kinosearch", 1);
+    kinopathPub = nh.advertise<visualization_msgs::MarkerArray>("/visualization/car_path", 1);
     point_cloud_sub_ = nh.subscribe("global_map", 10, &Car_KinoSearch::GlobalMapBuild, this);
     MinTurnRadius = wheelbase/std::tan(max_steer);
     tie_breaker_ = 1.0+1.0/10000;
@@ -473,9 +474,55 @@ void Car_KinoSearch::visualize(double dt){
 
     kinosearchPub.publish(car_traj);
 }
+
+void Car_KinoSearch::draw_path(double dt){
+    std::vector<Eigen::Vector3d> path_list = getKinoTraj(dt);
+    visualization_msgs::MarkerArray car_traj;
+    Eigen::Vector3d pos;
+    Eigen::Matrix3d rota_M;
+    for (int i = 0; i < path_list.size(); i++)
+    {
+        double yaw = path_list[i][2];
+        rota_M  <<  cos(yaw),-sin(yaw),0,
+                sin(yaw),cos(yaw),0,
+                0       ,0       ,1; 
+        double x = path_list[i][0],y=path_list[i][1],z=0;
+        pos = Eigen::Vector3d(x,y,z)+rota_M*(Eigen::Vector3d(car_l/2,0,car_h/2));
+        Eigen::Quaterniond q(rota_M);
+        visualization_msgs::Marker WpMarker;
+        WpMarker.id = i;
+        WpMarker.header.stamp = ros::Time::now();
+        WpMarker.header.frame_id = frame;
+        WpMarker.action = visualization_msgs::Marker::ADD;
+        WpMarker.type = visualization_msgs::Marker::ARROW;
+        WpMarker.ns = "car_kinoseach";
+        WpMarker.color.r = 1.0;
+        WpMarker.color.g = 0;
+        WpMarker.color.b = 0;
+        WpMarker.color.a = 0.5;
+        WpMarker.scale.x = 0.1;
+        WpMarker.scale.y = 0.05;
+        WpMarker.scale.z = 0.0;
+        WpMarker.pose.orientation.w = q.w();
+        WpMarker.pose.orientation.x = q.x();
+        WpMarker.pose.orientation.y = q.y();
+        WpMarker.pose.orientation.z = q.z();
+        WpMarker.pose.position.x = pos[0];
+        WpMarker.pose.position.y = pos[1];
+        WpMarker.pose.position.z = pos[2];
+        car_traj.markers.push_back(WpMarker);
+    }
+
+    kinopathPub.publish(car_traj);
+}
+
+
 double Car_KinoSearch::get_totalT(){
     if(!has_path_)
+    {
         ROS_ERROR("no path!");
+        total_T = -1000000;
+    }
     if(!is_shot_succ_)
         total_T = path_nodes_.back()->time;
     else
