@@ -9,6 +9,11 @@ pip install casadi
 （2）Hunter仿真相关依赖
 请参考松灵官方：https://github.com/agilexrobotics/ugv_gazebo_sim
 
+## 编译以使用VSCODE IDE
+```bash
+catkin_make -DCMAKE_BUILD_TYPE=Release -DCMAKE_EXPORT_COMPILE_COMMANDS=Yes
+```
+
 ## 启动
 
 ```bash
