@@ -1,0 +1,8 @@
+prefix=/home/pi/Desktop/kino_car_ws/install
+
+Name: map_generator
+Description: Description of map_generator
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 
