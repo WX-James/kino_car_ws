@@ -159,6 +159,7 @@ class Car_KinoSearch {
   double MinTurnRadius;
   /* penaly param*/
   double turn_penalty_factor = 1.5;
+  // double backward_penalty_factor = 4.5;
   double backward_penalty_factor = 4.5;
   /* ros relate*/
   ros::Publisher kinosearchPub;
