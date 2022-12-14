@@ -1,6 +1,6 @@
 <launch>
 
-  <arg name="map_size_x_" default="42.0"/>
+  <arg name="map_size_x_" default="40.0"/>
   <arg name="map_size_y_" default="40.0"/>
   <arg name="map_size_z_" default="5.0"/>
 

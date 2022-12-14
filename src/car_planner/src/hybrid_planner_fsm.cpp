@@ -65,6 +65,7 @@ void HybridReplanFSM::waypointCallback(const geometry_msgs::PoseStamped& msg)
 
 }
 
+
 void HybridReplanFSM::odometryCallback(const nav_msgs::OdometryConstPtr& msg)
 {
   odom_pos_(0) = msg->pose.pose.position.x;
@@ -93,14 +94,12 @@ void HybridReplanFSM::changeFSMExecState(FSM_EXEC_STATE new_state, std::string p
 }
 
 
-
 void HybridReplanFSM::printFSMExecState()
 {
     std::string state_str[5] = { "INIT", "WAIT_TARGET", "GEN_NEW_TRAJ", "REPLAN_TRAJ", "EXEC_TRAJ" };
 
     std::cout << "[FSM]: state: " + state_str[int(exec_state_)] << std::endl;
 }
-
 
 
 void HybridReplanFSM::execFSMCallback(const ros::TimerEvent& e)
@@ -191,8 +190,9 @@ void HybridReplanFSM::execFSMCallback(const ros::TimerEvent& e)
 
 void HybridReplanFSM::checkCollisionCallback(const ros::TimerEvent& e)
 {
-
+// TODO: 碰撞检测的回调
 }
+
 
 void HybridReplanFSM::pubCMDCallback(const ros::TimerEvent& e)
 {
@@ -241,6 +241,7 @@ void HybridReplanFSM::pubCMDCallback(const ros::TimerEvent& e)
     mpc_traj_pub.publish(waypoint_array);        // 发送参考轨迹    
     // std::cout << "pub cmd done\n";
 }
+
 
 bool HybridReplanFSM::callHybridReplan()
 {

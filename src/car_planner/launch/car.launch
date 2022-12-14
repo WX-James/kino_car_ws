@@ -45,7 +45,7 @@
     <param name="car/init_y"   value="0.0" />
     <param name="car/init_yaw"   value="0.0" />
     <param name="world_frame_id" value="world" type="string"/>
-    <param name="car_search/tau" value="0.1" type="double"/>
+    <param name="car_search/tau" value="1.0" type="double"/>
     <param name="car_seach/velocity" value="1.0" type="double"/>
     <param name="car_search/lambda_heu" value="1.0" type="double"/>
     <param name="car_search/allocate_num" value="100000" type="int"/>

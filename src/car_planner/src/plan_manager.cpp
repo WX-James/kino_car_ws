@@ -20,6 +20,7 @@ void HybridManager::initPlanModules(ros::NodeHandle& nh)
 }
 
 bool HybridManager::checkTrajCollision(double& distance) {
+// TODO: 碰撞检测    
     return true;
 }
 

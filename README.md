@@ -16,6 +16,15 @@ catkin_make -DCMAKE_BUILD_TYPE=Release -DCMAKE_EXPORT_COMPILE_COMMANDS=Yes
 
 ## 启动
 
+1. Hybrid-Astar全局路径搜索测试
+
+```bash
+source devel/setup.bash
+roslaunch car_planner car.launch
+```
+
+2. Hybrid-Astar局部路径搜索和MPC路径跟踪
+
 ```bash
 source devel/setup.bash
 roslaunch ausim_test hybrid_plan.launch
