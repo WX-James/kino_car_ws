@@ -1,11 +1,7 @@
 
 
 #include <ros/ros.h>
-
 #include "car_planner/hybrid_planner_fsm.h"
-
-
-
 
 int main(int argc, char** argv) {
     ros::init(argc, argv, "Hybrid_local_planner_node");

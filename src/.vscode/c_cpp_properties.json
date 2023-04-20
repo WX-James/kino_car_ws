@@ -1,0 +1,25 @@
+{
+  "configurations": [
+    {
+      "browse": {
+        "databaseFilename": "${default}",
+        "limitSymbolsToIncludedHeaders": false
+      },
+      "includePath": [
+        "/opt/ros/noetic/include/**",
+        "/home/pi/Desktop/kino_car_ws/src/ausim_test/include/**",
+        "/home/pi/Desktop/kino_car_ws/src/car_planner/include/**",
+        "/home/pi/Desktop/kino_car_ws/src/plan_env/include/**",
+        "/home/pi/Desktop/kino_car_ws/src/hunter_simulator/steer_bot_hardware_gazebo/include/**",
+        "/home/pi/Desktop/kino_car_ws/src/hunter_simulator/steer_drive_controller/include/**",
+        "/usr/include/**"
+      ],
+      "name": "ROS",
+      "intelliSenseMode": "gcc-x64",
+      "compilerPath": "/usr/bin/gcc",
+      "cStandard": "gnu11",
+      "cppStandard": "c++14"
+    }
+  ],
+  "version": 4
+}

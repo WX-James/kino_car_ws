@@ -7,14 +7,14 @@ import time
 def MPC(self_state, goal_state):
     opti = ca.Opti()
     ## parameters for optimization
-    T = 0.10
+    T = 0.05
     N = 10  # MPC horizon
-    v_max = 1.5
+    v_max = 1.2
     # omega_max = 0.523 | 5.0
-    omega_max = 0.30
+    omega_max = 0.50
     L = 608.54e-3 #wheel base
-    Q = np.array([[1.0, 0.0, 0.0],[0.0, 1.0, 0.0],[0.0, 0.0, 0.1]])
-    R = np.array([[0.4, 0.0], [0.0, 0.2]])
+    Q = np.array([[2.0, 0.0, 0.0],[0.0, 2.0, 0.0],[0.0, 0.0, 0.10]])
+    R = np.array([[0.4, 0.0], [0.0, 0.1]])
     goal = goal_state[:,:3]
     opt_x0 = opti.parameter(3) #vector3-parameter
     opt_controls = opti.variable(N, 2) #matrix10*2-variable

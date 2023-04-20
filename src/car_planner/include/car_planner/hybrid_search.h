@@ -160,7 +160,7 @@ class Car_KinoSearch {
   /* penaly param*/
   double turn_penalty_factor = 1.5;
   // double backward_penalty_factor = 4.5;
-  double backward_penalty_factor = 4.5;
+  double backward_penalty_factor = 10.0;
   /* ros relate*/
   ros::Publisher kinosearchPub;
   ros::Publisher kinopathPub;

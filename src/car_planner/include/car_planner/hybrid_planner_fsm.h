@@ -54,6 +54,9 @@ private:
 
   bool plan_success;
 
+  double car_l, car_h, car_w; // 小车外形尺寸
+
+
   /* helper functions */
   bool callHybridReplan();        // front-end and back-end method
 
@@ -67,7 +70,7 @@ private:
   void waypointCallback(const geometry_msgs::PoseStamped& msg);
   void odometryCallback(const nav_msgs::OdometryConstPtr& msg);
 
-  void pubCMDCallback(const ros::TimerEvent& e);
+  void pubRefTrajCallback(const ros::TimerEvent& e);
 
 
 public:

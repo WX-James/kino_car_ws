@@ -7,12 +7,14 @@ void HybridReplanFSM::init(ros::NodeHandle& nh)
     exec_state_  = FSM_EXEC_STATE::INIT;
     have_target_ = false;
     have_odom_   = false;
-
     plan_success = false;
 
     /*  参数设置  */
     nh.param("fsm/thresh_replan", replan_thresh_, -1.0);
     nh.param("fsm/thresh_no_replan", no_replan_thresh_, -1.0);
+    nh.param("car_search/car_l",car_l,0.6);
+    nh.param("car_search/car_w",car_w,0.4);
+    nh.param("car_search/car_h",car_h,0.3);
 
     // 规划管理：主要的模块 -----------------------------
     planner_manager_.reset(new HybridManager);
@@ -25,9 +27,9 @@ void HybridReplanFSM::init(ros::NodeHandle& nh)
 
     /* callback */
     exec_timer_   = nh.createTimer(ros::Duration(0.10), &HybridReplanFSM::execFSMCallback, this);
-    safety_timer_ = nh.createTimer(ros::Duration(0.05), &HybridReplanFSM::checkCollisionCallback, this);
+    // safety_timer_ = nh.createTimer(ros::Duration(0.05), &HybridReplanFSM::checkCollisionCallback, this);
 
-    cmd_timer_ = nh.createTimer(ros::Duration(0.10), &HybridReplanFSM::pubCMDCallback, this);
+    cmd_timer_ = nh.createTimer(ros::Duration(0.05), &HybridReplanFSM::pubRefTrajCallback, this);
 
     waypoint_sub_ =
         nh.subscribe("waypoints", 1, &HybridReplanFSM::waypointCallback, this);
@@ -54,7 +56,7 @@ void HybridReplanFSM::waypointCallback(const geometry_msgs::PoseStamped& msg)
 
     end_state_ << msg.pose.position.x, msg.pose.position.y, tyaw;
 
-    ROS_INFO_STREAM("TARGET=" << end_state_);
+    ROS_INFO_STREAM("TARGET=" << end_state_.transpose());
     ROS_INFO("[node] receive the planning target");
     have_target_ = true;
 
@@ -166,11 +168,27 @@ void HybridReplanFSM::execFSMCallback(const ros::TimerEvent& e)
             ros::Time time_now = ros::Time::now();
             double t_cur = (time_now - start_time_).toSec();        // 相对于规划起始时刻的时间
 
+            Eigen::Vector2d start_pt_, end_pt_, odom_pt_;
+            start_pt_ << start_state_[0], start_state_[1];
+            end_pt_ << end_state_[0], end_state_[1];
+            odom_pt_ << odom_pos_[0], odom_pos_[1];
+
             if(t_cur > traj_duration)
             {
                 have_target_ = false;
                 changeFSMExecState(WAIT_TARGET, "FSM");
                 return;
+            }
+            else if ((end_pt_ - odom_pt_).norm() < no_replan_thresh_) {
+                // cout << "near end" << endl;
+                return;
+
+            } else if ((start_pt_ - odom_pt_).norm() < replan_thresh_) {
+                // cout << "near start" << endl;
+                return;
+
+            } else {
+                changeFSMExecState(REPLAN_TRAJ, "FSM");
             }
             break;
         }
@@ -179,7 +197,19 @@ void HybridReplanFSM::execFSMCallback(const ros::TimerEvent& e)
         {
             // TODO:
             // 重规划模式：根据现有轨迹状态，规划轨迹
-            changeFSMExecState(WAIT_TARGET, "FSM");
+
+            ros::Time start_time_ = planner_manager_->start_time_;  // 规划的起始时间
+            ros::Time time_now = ros::Time::now();
+            double t_cur = (time_now - start_time_).toSec();        // 相对于规划起始时刻的时间
+
+            start_state_ = planner_manager_->get_traj_point(t_cur);
+
+            bool success = callHybridReplan();
+            if (success) {
+                changeFSMExecState(EXEC_TRAJ, "FSM");
+            } else {
+                changeFSMExecState(GEN_NEW_TRAJ, "FSM");
+            }
             break;
         }
 
@@ -187,14 +217,66 @@ void HybridReplanFSM::execFSMCallback(const ros::TimerEvent& e)
 
 }
 
-
+// TODO: 碰撞检测的回调
 void HybridReplanFSM::checkCollisionCallback(const ros::TimerEvent& e)
 {
-// TODO: 碰撞检测的回调
+    if(have_target_) {
+        Eigen::Vector3d target_pt;
+        target_pt << end_state_[0], end_state_[1], 0.2;
+        auto map_env = planner_manager_->edt_environment_;
+        std::cout << "11111111111111\n";
+        double target_to_obs = map_env->evaluateCoarseEDT(target_pt, -1.0);
+        std::cout << "222222222222222\n";
+
+        if(target_to_obs <= 0.5){
+            const double    dr = 0.5, dtheta = 30;
+            double          max_dist = -1.0;
+            Eigen::Vector3d new_goal, tmp_goal;
+            // 搜索目标点附近的可行点作为新的目标点 
+            std::cout << "333333333333333333\n";
+
+            for (double r = dr; r <= 5 * dr + 1e-3; r += dr) {
+                for (double theta = -90; theta <= 270; theta += dtheta) {
+                    tmp_goal[0] = target_pt(0) + r * cos(theta / 57.3);
+                    tmp_goal[1] = target_pt(1) + r * sin(theta / 57.3);
+                    tmp_goal[2] = 0.2;
+                    target_to_obs = map_env->evaluateCoarseEDT(tmp_goal, -1.0);
+
+                    if(target_to_obs > max_dist){
+                        max_dist = target_to_obs;
+                        new_goal = tmp_goal;
+                    }
+                }
+            }
+            std::cout << "444444444444444444\n";
+
+            // 如果找到了该可行点
+            if (max_dist > 0.5) {
+                cout << "change goal, replan." << endl;
+                end_state_[0] = new_goal[0];
+                end_state_[1] = new_goal[1];
+
+                have_target_ = true;
+
+                if (exec_state_ == EXEC_TRAJ) {
+                    changeFSMExecState(REPLAN_TRAJ, "SAFETY");
+                }
+            } 
+            // 没有找到可行点
+            else {
+
+                cout << "goal near collision, keep retry" << endl;
+                changeFSMExecState(REPLAN_TRAJ, "FSM");
+            }
+        }
+        else{
+            std::cout << "555555555555\n";
+        }
+    }
 }
 
 
-void HybridReplanFSM::pubCMDCallback(const ros::TimerEvent& e)
+void HybridReplanFSM::pubRefTrajCallback(const ros::TimerEvent& e)
 {
     // 拿到规划成功的轨迹
     // std::cout << "pub cmd in\n";
@@ -245,7 +327,18 @@ void HybridReplanFSM::pubCMDCallback(const ros::TimerEvent& e)
 
 bool HybridReplanFSM::callHybridReplan()
 {
+    std::cout << "[HybridReplanFSM]: Try to generate new traj." << std::endl;
+    clock_t time_start,time_end;  //定义clock_t变量用于计时
+    time_start = clock();          //搜索开始时间
+
     plan_success = planner_manager_->hybridReplan(start_state_, end_state_);
+
+    time_end = clock();   //搜索结束时间
+
+    double t_search = double(time_end-time_start)/CLOCKS_PER_SEC;
+    
+    std::cout << "[HybridReplanFSM]: Hybrid Astar cost time:= " << t_search << std::endl;
+
 
     if(plan_success)
     {

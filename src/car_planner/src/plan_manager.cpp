@@ -48,7 +48,7 @@ bool HybridManager::hybridReplan(Eigen::Vector3d start_state, Eigen::Vector3d en
     } 
     else 
     {
-        ROS_INFO("[Hybrid replan]: hybrid Search success.");
+        std::cout <<"[Hybrid replan]: hybrid Search success." << std::endl;
     }
 
     // kino_path_finder_->visualize(0.1);   // 绘制车体路径

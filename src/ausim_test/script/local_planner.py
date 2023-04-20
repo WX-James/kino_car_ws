@@ -13,7 +13,7 @@ import math
 
 class Local_Planner():
     def __init__(self):
-        self.replan_period = rospy.get_param('/local_planner/replan_period', 0.10) # 调用MPC求解的频率，需要与MPC的离散时间保持一致
+        self.replan_period = rospy.get_param('/local_planner/replan_period', 0.05) # 调用MPC求解的频率，需要与MPC的离散时间保持一致
         self.curr_state = np.zeros(5)   # 保存小车的状态
         self.z = 0.0                    # 小车的z位置
         self.N = 10                     # 模型预测控制的预测步长

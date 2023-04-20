@@ -22,6 +22,7 @@ void Car_KinoSearch::setParam(ros::NodeHandle& nh)
     // nh.param("map/x_size",map_size_3d_(0),100.0);
 
     MinTurnRadius = wheelbase/std::tan(max_steer);
+    ROS_ERROR("MinTurnRadius:= %f",MinTurnRadius);
     tie_breaker_ = 1.0+1.0/10000;
 
     kinopathPub = nh.advertise<visualization_msgs::MarkerArray>("/visualization/car_path", 1);
@@ -55,8 +56,8 @@ double Car_KinoSearch::estimateHeuristic(Eigen::Vector3d x1,Eigen::Vector3d x2){
     double dx = x1[0]-x2[0];
     double dy = x1[1]-x2[1];
     Eigen::Vector3d d(dx,dy,0); 
+    // return 1.0 * (1 + tie_breaker_) * (abs(dx) + abs(dy));
     return 1.0 * (1 + tie_breaker_)*d.norm();
-
 }
 Eigen::Vector3d Car_KinoSearch::ExpandNeighbor(Eigen::Vector3d& state,double vel,double dt,SUBPATH_TYPE type,double& cost){
     Eigen::Vector3d TranState;
